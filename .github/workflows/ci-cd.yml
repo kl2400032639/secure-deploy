@@ -1,0 +1,36 @@
+name: SecureDeploy CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download source code
+        uses: actions/checkout@v4
+
+      - name: Check website file
+        run: test -s index.html
+
+      - name: Validate HTML
+        run: |
+          grep -q "<h1>SecureDeploy</h1>" index.html
+          echo "Website validation passed!"
+
+  deploy:
+    name: Approval and Deployment Demo
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Confirm approved deployment
+        run: echo "Approved! Production deployment step completed."
